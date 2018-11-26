@@ -330,4 +330,4 @@ ASALocalRun/
 .mfractor/
 
 # Blender cache files
-.blend1
+*.blend1

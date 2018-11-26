@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Involute Gear",
     "author": "Ricard Bitriá Ribes",
-    "version": (1, 0),
+    "version": (1, 1),
     "blender": (2, 75, 0),
     "location": "View3D > Add > Mesh > New Object",
     "description": "Adds an involute profile gear",
@@ -224,31 +224,57 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
     """Create a new Involute Gear"""
     bl_idname = "mesh.add_inv_gear"
     bl_label = "Add Mesh Object"
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {'REGISTER', 'UNDO', 'PRESET'}
 
     def teeth_update(self, context):
-        if self.pitch_diameter != self.modulus*self.number_of_teeth:
+        if self.pitch_diameter != self.modulus*self.number_of_teeth and self.state == 0:
+            self.state = 1
             self.pitch_diameter = self.modulus*self.number_of_teeth
+        self.state = 0
 
     def diameter_update(self, context):
-        if self.number_of_teeth != self.pitch_diameter/self.modulus:
+        if self.number_of_teeth != self.pitch_diameter/self.modulus and self.state == 0:
+            self.state = 1
             self.number_of_teeth = self.pitch_diameter/self.modulus
+            self.base = self.size_factor*(self.pitch_diameter/2-self.dedendum)
+        self.state = 0
 
     def modulus_update(self, context):
+        self.state = 1
         self.pitch_diameter = self.modulus * self.number_of_teeth
+        self.base = self.size_factor*(self.pitch_diameter/2-self.dedendum)
+        
+    def base_update(self, context):
+        radius = self.pitch_diameter/2
+        if self.state == 0:
+            self.size_factor = self.base/(radius-self.dedendum)
+        if self.base > radius-self.dedendum:
+            self.base = radius-self.dedendum
+        self.state = 0
 
+    state = IntProperty(
+            default = 0
+            )
+            
+    size_factor = FloatProperty(
+            default = 0.5,
+            min = 0.0,
+            max = 1.0
+            )
+    
     number_of_teeth = IntProperty(
             name="Number of Teeth",
             description="Number of teeth on the gear",
             min=2,
-            default=12,
+            default=10,
             update = teeth_update
             )
 
     pitch_diameter = FloatProperty(
             name="Pitch diameter",
             min=0.001,
-            default=72.0,
+            default=2.0,
+            step=1,
             subtype='DISTANCE',
             description="Diameter of the pitch circle",
             update = diameter_update
@@ -256,8 +282,9 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
 
     modulus = FloatProperty(
             name="Modulus",
-            min=0.001,
-            default=6.0,
+            min=0.01,
+            default=0.2,
+            step=1,
             subtype='DISTANCE',
             description="Pitch diameter divided by the number of teeth",
             update=modulus_update
@@ -291,7 +318,8 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
             min=0.0001,
             max=100.0,
             subtype='DISTANCE',
-            default=0.2
+            default=0.375,
+            update=base_update
             )
     width = FloatProperty(name="Width",
             description="Width, thickness of gear",
@@ -344,9 +372,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
         box.prop(self, 'ring_res')
 
     def execute(self, context):
-        radius = self.number_of_teeth/self.modulus/2
-        if self.base > radius-self.dedendum:
-            self.base = radius-self.dedendum
+        radius = self.pitch_diameter/2
         if self.dedendum > radius-self.base:
             self.dedendum = radius-self.base
             
