@@ -332,3 +332,4 @@ ASALocalRun/
 # Blender cache files
 *.blend1
 *.blend
+addTooth.py
