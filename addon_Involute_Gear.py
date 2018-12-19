@@ -34,13 +34,25 @@ def pol2cart(theta,rho, z):
     y = rho*sin(theta)
     return Vector((x, y, z))
 
-def calc_max_beta(a):
+def calc_max_beta(d):
     beta = 0
     for I in range(9):
         inc = 10**-I
-        while abs(a) > tan(beta)-beta:
+        while abs(d) > tan(beta)-beta:
             beta += inc
         beta -= inc
+        a=0
+    b=pi/2
+    beta = (b+a)/2
+    for I in range(50):
+        y=tan(beta)-beta+d
+        if y == 0:
+            return beta
+        elif y>0:
+            b=beta
+        else:
+            a=beta
+        beta = (b+a)/2
     return beta
 
 #Calculates the shape of one tooth, result in polar coordinates
@@ -58,7 +70,6 @@ def add_tooth(t, radius, Ra, Rd, base, p_angle, res):
         
     verts = []
     verts_polar = []
-    jj = -1
     for ii in A:
         x = rinv*(cos(ii)+(ii-k)*sin(ii))
         y = rinv*(sin(ii)-(ii-k)*cos(ii))
@@ -230,6 +241,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
         if self.pitch_diameter != self.modulus*self.number_of_teeth and self.state == 0:
             self.state = 1
             self.pitch_diameter = self.modulus*self.number_of_teeth
+            self.base = self.size_factor*(self.pitch_diameter/2-self.dedendum)
         self.state = 0
 
     def diameter_update(self, context):
@@ -248,8 +260,8 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
         radius = self.pitch_diameter/2
         if self.state == 0:
             self.size_factor = self.base/(radius-self.dedendum)
-        if self.base > radius-self.dedendum:
-            self.base = radius-self.dedendum
+            if self.base > radius-self.dedendum:
+                self.base = radius-self.dedendum
         self.state = 0
 
     state = IntProperty(
