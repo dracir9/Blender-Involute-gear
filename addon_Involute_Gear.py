@@ -2,7 +2,7 @@ bl_info = {
     "name": "Involute Gear",
     "author": "Ricard Bitriá Ribes",
     "version": (1, 1),
-    "blender": (2, 75, 0),
+    "blender": (2, 90, 0),
     "location": "View3D > Add > Mesh > New Object",
     "description": "Adds an involute profile gear",
     "warning": "",
@@ -264,17 +264,17 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
                 self.base = radius-self.dedendum
         self.state = 0
 
-    state = IntProperty(
+    state : IntProperty(
             default = 0
             )
             
-    size_factor = FloatProperty(
+    size_factor : FloatProperty(
             default = 0.5,
             min = 0.0,
             max = 1.0
             )
     
-    number_of_teeth = IntProperty(
+    number_of_teeth : IntProperty(
             name="Number of Teeth",
             description="Number of teeth on the gear",
             min=2,
@@ -282,7 +282,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
             update = teeth_update
             )
 
-    pitch_diameter = FloatProperty(
+    pitch_diameter : FloatProperty(
             name="Pitch diameter",
             min=0.001,
             default=2.0,
@@ -292,7 +292,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
             update = diameter_update
             )
 
-    modulus = FloatProperty(
+    modulus : FloatProperty(
             name="Modulus",
             min=0.01,
             default=0.2,
@@ -302,7 +302,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
             update=modulus_update
             )
     
-    addendum = FloatProperty(
+    addendum : FloatProperty(
             name="Addendum",
             min=0.0001,
             default=0.1,
@@ -310,7 +310,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
             description="Addendum, extent of tooth above radius"
             )
     
-    dedendum = FloatProperty(name="Dedendum",
+    dedendum : FloatProperty(name="Dedendum",
             description="Dedendum, extent of tooth below radius",
             min=0.0001,
             max=100.0,
@@ -318,14 +318,14 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
             default=0.1
             )
             
-    angle = FloatProperty(name="Pressure Angle",
+    angle : FloatProperty(name="Pressure Angle",
             description="Pressure angle, skewness of tooth tip",
             min=0.0,
             max=radians(45.0),
             subtype='ANGLE',
             default=radians(20.0)
             )
-    base = FloatProperty(name="Base",
+    base : FloatProperty(name="Base",
             description="Base, extent of gear below radius",
             min=0.0001,
             max=100.0,
@@ -333,7 +333,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
             default=0.375,
             update=base_update
             )
-    width = FloatProperty(name="Width",
+    width : FloatProperty(name="Width",
             description="Width, thickness of gear",
             min=0.05,
             max=100.0,
@@ -341,21 +341,21 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
             default=0.2
             )
             
-    tooth_res = IntProperty(name="Tooth resolution",
+    tooth_res : IntProperty(name="Tooth resolution",
             description="Subdivision multiplier for tooth calculation",
             min=1,
             max=1024,
             default=8
             )
             
-    ring_res = IntProperty(name="Ring resolution",
+    ring_res : IntProperty(name="Ring resolution",
             description="Subdivision multiplier for circle calculations",
             min=0,
             max=128,
             default=2
             )
             
-    manual_mod = BoolProperty(name="Manual mode",
+    manual_mod : BoolProperty(name="Manual mode",
             description="Custom / Automatic gear parameters",
             default = False
             )
@@ -403,7 +403,7 @@ def add_object_button(self, context):
     self.layout.operator(
         OBJECT_OT_add_inv_gear.bl_idname,
         text="Involute Gear",
-        icon='SCRIPTWIN')
+        icon='PREFERENCES')
 
 
 # This allows you to right click on a button and link to the manual
@@ -418,13 +418,13 @@ def add_object_manual_map():
 def register():
     bpy.utils.register_class(OBJECT_OT_add_inv_gear)
     bpy.utils.register_manual_map(add_object_manual_map)
-    bpy.types.INFO_MT_mesh_add.append(add_object_button)
+    bpy.types.VIEW3D_MT_mesh_add.append(add_object_button)
 
 
 def unregister():
     bpy.utils.unregister_class(OBJECT_OT_add_inv_gear)
     bpy.utils.unregister_manual_map(add_object_manual_map)
-    bpy.types.INFO_MT_mesh_add.remove(add_object_button)
+    bpy.types.VIEW3D_MT_mesh_add.remove(add_object_button)
 
 
 if __name__ == "__main__":
