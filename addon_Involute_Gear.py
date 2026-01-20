@@ -1,8 +1,8 @@
 bl_info = {
     "name": "Involute Gear",
     "author": "Ricard Bitriá Ribes",
-    "version": (1, 1),
-    "blender": (2, 90, 0),
+    "version": (1, 2),
+    "blender": (4, 1, 0),
     "location": "View3D > Add > Mesh > New Object",
     "description": "Adds an involute profile gear",
     "warning": "",
