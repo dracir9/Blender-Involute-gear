@@ -160,16 +160,16 @@ def add_gear(teethNum, Dp, Ad, De, base, p_angle, t_res, r_res,
         if I == teethNum*(r_res+1)*2-1:
             if r_res != 0:
                 J += r_res
-                faces.append([strt+Rd_circ_cnt/2-1, 0, strt+Rd_circ_cnt, strt+Rd_circ_cnt+I])
+                faces.append([strt+Rd_circ_cnt//2-1, 0, strt+Rd_circ_cnt, strt+Rd_circ_cnt+I])
                 state = 0
             else:
                 faces.append([teeth_vert_cnt-1, 0, strt, strt+Rd_circ_cnt+I])
                 K+=1
         elif I == teethNum*(r_res+1)*4-1:
             if r_res != 0:
-                faces.append([strt-1, strt+Rd_circ_cnt/2, strt+Rd_circ_cnt+Rb_circ_cnt/2, len(verts)-1])
+                faces.append([strt-1, strt+Rd_circ_cnt//2, strt+Rd_circ_cnt+Rb_circ_cnt//2, len(verts)-1])
             else:
-                faces.append([strt-1, teeth_vert_cnt, strt+Rd_circ_cnt+Rb_circ_cnt/2, len(verts)-1 ])
+                faces.append([strt-1, teeth_vert_cnt, strt+Rd_circ_cnt+Rb_circ_cnt//2, len(verts)-1 ])
         elif r_res == 0:
             faces.append([tooth_vert_cnt*((K+1)//2)-(K%2), tooth_vert_cnt*((K+2)//2)-((K-1)%2), strt+Rd_circ_cnt+I+1, strt+Rd_circ_cnt+I])
             K += 1
@@ -247,7 +247,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
     def diameter_update(self, context):
         if self.number_of_teeth != self.pitch_diameter/self.modulus and self.state == 0:
             self.state = 1
-            self.number_of_teeth = self.pitch_diameter/self.modulus
+            self.number_of_teeth = int(self.pitch_diameter/self.modulus)
             self.base = self.size_factor*(self.pitch_diameter/2-self.dedendum)
         self.state = 0
 
@@ -277,7 +277,7 @@ class OBJECT_OT_add_inv_gear(Operator, AddObjectHelper):
     number_of_teeth : IntProperty(
             name="Number of Teeth",
             description="Number of teeth on the gear",
-            min=2,
+            min=3,
             default=10,
             update = teeth_update
             )
